@@ -1,118 +1,156 @@
-# **Analyzing Customer Orders Using Python**
+# Analyzing Customer Orders Using Python
+##### VT_AGI: Python Refresher with AI Module Project | Brock Frary | 2026-05-09
 
-Course-End Project 1 -- VT Week 1: Introduction to Python using AI
-**Author:** Brock Frary | **Date:** 2026-05-09
+E-commerce order analysis using Python's built-in data structures. A standalone script
+processes 48 customer transactions across three product categories, classifies buyers by
+spending tier, identifies revenue trends, and surfaces cross-category purchasing patterns
+-- no external libraries required.
+
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![Dependencies](https://img.shields.io/badge/Dependencies-None%20(stdlib%20only)-4CAF50)
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&logoColor=white)
 
 ---
 
-## Overview
+## Primary Project Artifact:
+### **[customer_order_analysis.py](https://github.com/VoxSecuritatis/VT-01-Python-Refresher-with-AI/blob/main/customer_order_analysis.py)**
 
-This project analyzes simulated e-commerce customer orders using Python's core data structures and control flow. The goal is to classify customers by spending tier, identify revenue trends by product category, and surface business insights -- all without external libraries.
+---
 
-The script demonstrates practical use of lists, tuples, dictionaries, and sets alongside loops, conditionals, sorting, and list comprehensions.
+## About This Project
+
+This is the module project for **VT_AGI: Python Refresher with AI**, part of the
+*Applied Agentic AI: Systems, Design & Impact* course at Virginia Tech / Simplilearn.
+
+The project analyzes simulated e-commerce customer order data to generate business
+insights a data analyst would present to business managers. The dataset -- 48 orders
+from 11 customers across 3 product categories -- is hardcoded as a list of tuples,
+making it a clean demonstration of Python data structures without I/O complexity.
+
+The analysis pipeline runs entirely through the Python standard library: lists, tuples,
+dictionaries, sets, loops, conditionals, sorting, and list comprehensions. The final
+output is an 8-section formatted console report covering customer classifications,
+category revenue, unique products, top spenders, and cross-category purchasing patterns.
+
+---
+
+## Analysis Pipeline
+
+```
+[Raw Orders List]  -- 48 tuples: (customer_name, product, price, category)
+        |
+        v
+[Data Organization]  -- unique customer names, order details dict, products dict
+        |
+        v
+[Category Classification]  -- product -> category mapping, unique categories set
+        |
+        v
+[Customer Spend Analysis]  -- total spend per customer, buyer tier classification
+        |                        High-value (>$100) / Moderate ($50-$100) / Low (<$50)
+        v
+[Business Insights]  -- revenue per category, unique products set, top 3 spenders
+        |
+        v
+[Cross-Category Analysis]  -- multi-category customers, Electronics & Clothing intersection
+        |
+        v
+[Report Output]  -- 8-section formatted console report
+```
+
+---
+
+## Report Sections
+
+| # | Section | Method |
+|---|---|---|
+| 1 | Customer Classifications | Loop + conditionals over per-customer totals |
+| 2 | Total Revenue per Category | Dictionary accumulation |
+| 3 | Unique Products | Set deduplication |
+| 4 | Top 3 Highest-Spending Customers | `sorted()` with `key=lambda`, `reverse=True` |
+| 5 | Customers Who Purchased Electronics | List comprehension + deduplication loop |
+| 6 | Customers Who Purchased from Multiple Categories | Set membership count per customer |
+| 7 | Customers Who Bought Both Electronics and Clothing | Set intersection logic |
+| 8 | Most Frequently Purchased Products | Dict count accumulation + max filter |
+
+---
+
+## Key Design Decisions
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Hardcoded dataset vs. file input | Hardcoded list of tuples | Keeps focus on data structure manipulation rather than I/O; no file dependency for reviewers |
+| Functions vs. classes | Functions only | The pipeline is linear with no shared mutable state; classes would add abstraction without benefit |
+| Standard library only vs. pandas | stdlib only | Demonstrates core Python competency; pandas would obscure the data structure work the project is meant to show |
+| Deduplication via list vs. set | List for ordered output, set for uniqueness checks | Preserves insertion order for report display while using set semantics for membership testing |
+| One function per operation | Separate named functions | Keeps each transformation testable and independently readable; avoids one large procedural block |
+
+---
+
+## Key Learnings
+
+**Sets for deduplication and intersection:** Python sets eliminate duplicate-tracking
+code that would otherwise require repeated `if x not in list` checks. The
+`find_unique_products` and `get_unique_categories` functions demonstrate this -- a single
+`set.add()` per iteration replaces a conditional branch. The intersection logic in
+`find_common_category_customers` identifies cross-category buyers without nested loops.
+
+**Dictionary accumulation pattern:** The revenue and spending total functions use the
+same pattern -- check for key existence, initialize to 0.0 if missing, then accumulate.
+This is the idiomatic Python alternative to `defaultdict` when keeping dependencies
+minimal, and it applies directly to any aggregation problem.
+
+**List comprehension with filtering:** `find_electronics_customers` filters orders in a
+single readable line using an inline `if` condition. The subsequent deduplication loop
+shows the trade-off: comprehensions are concise for filtering but need a separate pass
+when uniqueness matters (or a seen-set approach for larger datasets).
+
+**`sorted()` with `key=lambda`:** Sorting a dictionary's `.items()` by value in
+descending order using `key=lambda x: x[1], reverse=True` is a reusable pattern for
+ranked output. Slicing with `[:top_n]` makes it trivially extensible to any rank depth.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Notes |
+|---|---|---|
+| Language | Python 3.12 | No virtual environment or packages required |
+| Data structures | list, tuple, dict, set | All stdlib; zero third-party dependencies |
+| Development tool | GitHub Copilot | AI-assisted development; all logic reviewed and validated manually |
 
 ---
 
 ## Dataset
 
-The dataset is hardcoded in `customer_order_analysis.py` as a list of tuples. Each tuple represents one order:
-
-```
-(customer_name, product, price, category)
-```
-
-- **Customers:** 11 (Alice, Bob, Charlie, Diana, Eve, Frank, Grace, Henry, Ivy, Jack, Kelly)
-- **Orders:** 48 total transactions
-- **Categories:** Electronics, Clothing, Home Essentials
-- **Products:** 33 unique items (e.g., Laptop, T-Shirt, Blender, Smartphone)
-- **Price range:** $2.00 to $800.00
-
----
-
-## Tasks Completed
-
-### 1. Store Customer Orders
-- List of unique customer names extracted from raw orders
-- Each order stored as a `(name, product, price, category)` tuple in a master list
-- Dictionary mapping each customer name to their list of order tuples
-- Dictionary mapping each customer name to their list of purchased product names
-
-### 2. Classify Products by Category
-- Dictionary mapping each product to its category
-- Set of unique product categories (deduplication)
-- Printed display of all available categories
-
-### 3. Analyze Customer Orders
-- Total spending calculated per customer via loop
-- Customers classified by spending tier:
-
-| Tier | Threshold |
-|---|---:|
-| High-value buyer | above $100.00 |
-| Moderate buyer | $50.00 to $100.00 |
-| Low-value buyer | below $50.00 |
-
-### 4. Generate Business Insights
-- Total revenue per product category stored in a dictionary
-- Unique products extracted across all orders using a set
-- Electronics customers identified using list comprehension
-- Top 3 highest-spending customers identified via `sorted()`
-
-### 5. Organize and Display Data
-- Full report printed to console with labeled sections
-- Set operations used to find customers purchasing from multiple categories
-- Intersection logic identifies customers who bought both Electronics and Clothing
-
----
-
-## Functions
-
-| Function | Purpose |
+| Attribute | Value |
 |---|---|
-| `get_customer_names` | Returns a deduplicated list of customer names |
-| `build_customer_orders` | Maps each customer to their full order tuples |
-| `build_customer_products` | Maps each customer to their purchased product names |
-| `build_product_categories` | Maps each product to its category |
-| `get_unique_categories` | Returns the set of all unique categories |
-| `display_categories` | Prints sorted category list |
-| `calculate_customer_totals` | Sums total spend per customer |
-| `classify_customers` | Assigns High/Moderate/Low tier to each customer |
-| `calculate_category_revenue` | Sums revenue per product category |
-| `find_unique_products` | Returns set of all unique products ordered |
-| `find_electronics_customers` | List comprehension to find Electronics buyers |
-| `find_top_customers` | Returns top N spenders via sorting |
-| `find_multi_category_customers` | Finds customers who bought across categories |
-| `find_common_category_customers` | Finds customers who bought from two named categories |
-| `find_most_frequently_purchased_products` | Finds products with the highest order count |
-| `print_report` | Prints the complete formatted analysis report |
-| `main` | Orchestrates all functions and runs the analysis |
+| Customers | 11 (Alice, Bob, Charlie, Diana, Eve, Frank, Grace, Henry, Ivy, Jack, Kelly) |
+| Orders | 48 total transactions |
+| Categories | Electronics, Clothing, Home Essentials |
+| Unique products | 33 |
+| Price range | $2.00 -- $800.00 |
 
 ---
 
-## Python Concepts Demonstrated
+## Prerequisites
 
-- **Lists** -- storing and iterating over ordered collections
-- **Tuples** -- immutable order records; unpacking with `customer, product, price, category = order`
-- **Dictionaries** -- mapping customers to orders, products to categories, categories to revenue
-- **Sets** -- deduplication of products and categories; membership testing
-- **Loops** -- iterating over orders to aggregate totals and classify customers
-- **Conditionals** -- spending tier branching (`if / elif / else`)
-- **List comprehension** -- filtering electronics buyers in one line
-- **Sorting** -- `sorted()` with `key=lambda` and `reverse=True` for top-spender ranking
-- **Set operations** -- multi-category and cross-category customer detection
-- **f-strings** -- formatted currency output (`${total:.2f}`)
+| Requirement | Version |
+|---|---|
+| Python | 3.8+ (3.12 recommended) |
+
+No packages to install. No virtual environment needed.
 
 ---
 
-## How to Run
-
-No dependencies beyond the Python standard library. No `requirements.txt` needed.
+## Setup and Run
 
 ```bash
 python customer_order_analysis.py
 ```
 
-The script prints category listings followed by the full analysis report to stdout.
+The script prints the available product categories, then the full 8-section analysis
+report, to stdout.
 
 ---
 
@@ -131,20 +169,13 @@ CUSTOMER ORDER ANALYSIS REPORT
 1. Customer Classifications:
    Alice: High-value buyer ($1047.00)
    Bob: High-value buyer ($375.00)
-   ...
-
-2. Total Revenue per Category:
-   Electronics: $...
-   Clothing: $...
-   Home Essentials: $...
-
-3. Unique Products:
-   Total unique products: 33
+   Charlie: Moderate buyer ($227.00)
    ...
 
 4. Top 3 Highest-Spending Customers:
    1. Alice ($1047.00)
-   ...
+   2. Diana ($885.00)
+   3. Eve ($810.00)
 
 Key Business Insights:
 - Electronics is the highest revenue category.
@@ -155,6 +186,15 @@ Key Business Insights:
 
 ---
 
-## Project Context
+## Project Structure
 
-This script was completed as **Project 1** of the Simplilearn VT Applied Agentic AI program, Week 1 module: "Introduction to Python using AI." It was developed with GitHub Copilot assistance to demonstrate AI-aided Python development for data analysis use cases.
+```
+.
+├── customer_order_analysis.py  # Full analysis pipeline: data, functions, report
+├── README.md                   # This file
+└── .gitignore                  # Excludes .venv and CLAUDE.md
+```
+
+---
+
+> © 2026 Brock Frary. All rights reserved.
